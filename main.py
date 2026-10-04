@@ -1,109 +1,99 @@
-#temperature converter
-def celsius_to_fahrenheit(celsius):
-    return (celsius * 9 / 5) + 32
+def verify_pin(correct_pin, max_attempts=3):
+    """Handles user authentication with a limited number of attempts."""
+    attempts = 0
+    while attempts < max_attempts:
+        entered_pin = input("Enter your 4-digit PIN: ").strip()
+        if entered_pin == correct_pin:
+            print("\n Login successful!")
+            return True
+        else:
+            attempts += 1
+            remaining = max_attempts - attempts
+            if remaining > 0:
+                print(f"Incorrect PIN. Attempts left: {remaining}\n")
+            else:
+                print("Too many incorrect attempts. Account locked for security.")
+    return False
 
 
-def fahrenheit_to_celsius(fahrenheit):
-    return (fahrenheit - 32) * 5 / 9
+def check_balance(balance):
+    """Displays current account balance."""
+    print(f"\n Current Balance: ₹{balance:,.2f}")
 
 
-def main():
-    print("--- Temperature Converter ---")
-    print("1. Celsius to Fahrenheit")
-    print("2. Fahrenheit to Celsius")
-
-    choice = input("Enter choice (1 or 2): ").strip()
-
-    if choice == '1':
-        c = float(input("Enter temperature in °C: "))
-        f = celsius_to_fahrenheit(c)
-        print(f"{c}°C = {f:.2f}°F")
-    elif choice == '2':
-        f = float(input("Enter temperature in °F: "))
-        c = fahrenheit_to_celsius(f)
-        print(f"{f}°F = {c:.2f}°C")
-    else:
-        print("Invalid choice!")
+def deposit(balance):
+    """Handles cash deposits and updates the balance."""
+    try:
+        amount = float(input("\nEnter amount to deposit: ₹"))
+        if amount <= 0:
+            print("Deposit amount must be greater than 0.")
+            return balance
+        balance += amount
+        print(f"Successfully deposited ₹{amount:,.2f}")
+        print(f"New Balance: ₹{balance:,.2f}")
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+    return balance
 
 
-if __name__ == "__main__":
-    main()
-print("-"*50)
-#Student Grade Calculator
-def calculate_grade(average):
-    if average >= 90:
-        return 'A+'
-    elif average >= 80:
-        return 'A'
-    elif average >= 70:
-        return 'B'
-    elif average >= 60:
-        return 'C'
-    elif average >= 50:
-        return 'D'
-    else:
-        return 'F'
+def withdraw(balance):
+    """Handles cash withdrawals with balance checks."""
+    try:
+        amount = float(input("\nEnter amount to withdraw: ₹"))
+        if amount <= 0:
+            print("Withdrawal amount must be greater than 0.")
+            return balance
+        if amount > balance:
+            print(f"Insufficient funds! Your current balance is ₹{balance:,.2f}")
+            return balance
+        balance -= amount
+        print(f"Please collect your cash: ₹{amount:,.2f}")
+        print(f"Remaining Balance: ₹{balance:,.2f}")
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+    return balance
 
 
-def main():
-    print("--- Student Grade Calculator ---")
-    num_subjects = int(input("Enter the number of subjects: "))
-
-    marks = []
-    for i in range(1, num_subjects + 1):
-        score = float(input(f"Enter marks for subject {i} (out of 100): "))
-        marks.append(score)
-
-    total = sum(marks)
-    average = total / num_subjects
-    grade = calculate_grade(average)
-
-    print("\n--- Result Summary ---")
-    print(f"Total Marks: {total:.2f} / {num_subjects * 100}")
-    print(f"Average:     {average:.2f}%")
-    print(f"Grade:       {grade}")
+def show_menu():
+    """Prints the operation menu."""
+    print("\n" + "=" * 25)
+    print("      ATM MAIN MENU      ")
+    print("=" * 25)
+    print("1. Check Balance")
+    print("2. Deposit Money")
+    print("3. Withdraw Money")
+    print("4. Exit")
+    print("=" * 25)
 
 
-if __name__ == "__main__":
-    main()
-print("-"*50)
-#Even/Odd & prime Number checker
-import math
+def run_atm():
+    """Main driver function managing account state and the main loop."""
+    account_pin = "1234"
+    balance = 10000.00  # Initial account balance
 
+    print("=" * 35)
+    print("   WELCOME TO APEX BANK ATM   ")
+    print("=" * 35)
 
-def is_even(n):
-    return n % 2 == 0
+    if not verify_pin(account_pin):
+        return
 
+    while True:
+        show_menu()
+        choice = input("Select an option (1-4): ").strip()
 
-def is_prime(n):
-    if n <= 1:
-        return False
-    if n in (2, 3):
-        return True
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-
-    # Check divisors up to sqrt(n), stepping by 6
-    for i in range(5, int(math.isqrt(n)) + 1, 6):
-        if n % i == 0 or n % (i + 2) == 0:
-            return False
-    return True
-
-
-def main():
-    print("--- Even/Odd & Prime Checker ---")
-    num = int(input("Enter an integer: "))
-
-    # Parity check
-    parity = "Even" if is_even(num) else "Odd"
-    print(f"{num} is {parity}.")
-
-    # Prime check
-    if is_prime(num):
-        print(f"{num} is a Prime number.")
-    else:
-        print(f"{num} is NOT a Prime number.")
+        if choice == "1":
+            check_balance(balance)
+        elif choice == "2":
+            balance = deposit(balance)
+        elif choice == "3":
+            balance = withdraw(balance)
+        elif choice == "4":
+            print("\nThank you for banking with us. Have a great day!")
+            break
+        else:
+            print("Invalid choice. Please select an option between 1 and 4.")
 
 
 if __name__ == "__main__":
-    main()
+    run_atm()
